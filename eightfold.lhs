@@ -2,7 +2,11 @@
 
 A massively multiplayer recursively self-complicating board game based on Ethereum.
 
-Play takes place on an 8x8 board of square tiles. All players move simultaneously. The moves a player can make are:
+Play takes place on an 8x8 board of square tiles.
+
+> data Board = Board [[Tile]]
+
+All players move simultaneously. The moves a player can make are: (1) place a force, (2) move a force, and (3) split a force.
 
 > data Move
 >   = PlaceForce
@@ -24,6 +28,9 @@ Players join the game by placing a force on the board.
 >   , player :: PlayerID
 >   }
 
-A force may be placed in any unoccupied tile. If a new force is placed in a tile on the same turn that an existing force moves into it, the placement fails, refunding ether.
+A force may be placed in any unoccupied tile. If a new force is placed in a tile on the same turn that an existing force moves into it, the placement fails, refunding ether. If two or more players place forces in the same tile on the same turn, the tile becomes contested.
 
-> placeForce :: Game -> Force -> 
+> data Tile
+>   = Unoccupied
+>   | Occupied Force
+>   | Contested Board
