@@ -39,7 +39,7 @@ All players move simultaneously.
 > makeMoves b = closeTurn . foldl makeMove (openTurn b)
 >
 > openTurn :: Board -> TurnInProgress
-> openTurn = undefined
+> openTurn = fmap openTile
 >
 > type TurnInProgress = Array Position' UnresolvedTile
 >
@@ -48,6 +48,14 @@ All players move simultaneously.
 >   , forcesMovingIn :: [Force]
 >   , forcesMovingOut :: [Force]
 >   , forcesBeingPlaced :: [Force]
+>   }
+>
+> openTile :: Tile -> UnresolvedTile
+> openTile t = UnresolvedTile
+>   { originalTile = t
+>   , forcesMovingIn = []
+>   , forcesMovingOut = []
+>   , forcesBeingPlaced = []
 >   }
 >
 > makeMove :: TurnInProgress -> Move -> TurnInProgress
