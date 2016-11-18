@@ -1,4 +1,6 @@
-> import Data.Array (Array, array)
+> import Data.Array (Array, array, elems, (!))
+> import Data.List (nub)
+> import Data.Maybe (mapMaybe)
 
 *Eightfold: Chaos Checkers*
 
@@ -7,6 +9,7 @@ A massively multiplayer recursively self-complicating board game based on Ethere
 Play takes place on an 8x8 board of square tiles.
 
 > type Board = Array Position Tile
+> type Position = (Char,Int)
 >
 > emptyBoard :: Board
 > emptyBoard = array (('a',1),('h',8)) [ ((x,y),Unoccupied) | x <- ['a'..'h'], y <- [1..8] ]
@@ -28,11 +31,9 @@ Every move costs an amount of ether to play.
 Players join the game by placing a force on the board.
 
 > data Force = Force
->   { position :: Recursive Position
->   , level :: Level
+>   { level :: Level
 >   , player :: PlayerID
 >   }
-> type Position = (Char,Int)
 > type Level = Int
 > type PlayerID = Int
 
@@ -40,16 +41,37 @@ A force may be placed in any unoccupied tile. If a new force is placed in a tile
 
 > data Tile
 >   = Unoccupied
->   | Occupied Level PlayerID
+>   | Occupied Force
 >   | Contested Board
 
 A contested tile contains an inner 8x8 board of square tiles. The tile remains contested as long as forces owned by two or more players occupy tiles within it.
 
-> data Recursive a
->   = Continuing a (Recursive a)
->   | Final a
->
-> getForce :: Recursive Position -> Board -> Maybe Force
-> getForce = undefined -- TODO: write code to show how recursive positions work
+> viewTile :: Board -> Position -> Maybe (Either Force Board)
+> viewTile b p = case b!p of
+>   Unoccupied -> Nothing
+>   Occupied f -> Just $ Left f
+>   Contested b' -> Just $ Right b
 
 When a tile is no longer contested, the forces in it join together into a single force occupying the previously contested tile.
+
+> resolveContest :: Board -> Tile
+> resolveContest b
+>   | length (playersIn b) >= 2 = Contested b
+>   | length (playersIn b) == 1 = Occupied $ Force {level = totalForces b, player = head $ playersIn b}
+>   | otherwise = Unoccupied
+>
+> totalForces :: Board -> Level
+> totalForces = sum . mapMaybe getForce . elems
+>
+> getForce :: Tile -> Maybe Level
+> getForce Unoccupied = Nothing
+> getForce (Occupied f) = Just $ level f
+> getForce (Contested b) = Just $ totalForces b
+>
+> playersIn :: Board -> [PlayerID]
+> playersIn = nub . (getPlayers =<<) . elems
+>
+> getPlayers :: Tile -> [PlayerID]
+> getPlayers Unoccupied = []
+> getPlayers (Occupied f) = [player f]
+> getPlayers (Contested b) = playersIn b
