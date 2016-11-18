@@ -46,11 +46,12 @@ A force may be placed in any unoccupied tile. If a new force is placed in a tile
 
 A contested tile contains an inner 8x8 board of square tiles. The tile remains contested as long as forces owned by two or more players occupy tiles within it.
 
-> viewTile :: Board -> Position -> Maybe (Either Force Board)
-> viewTile b p = case b!p of
+> viewTile :: Board -> [Position] -> Maybe Force
+> viewTile b [] = Nothing
+> viewTile b (p:ps) = case b!p of
 >   Unoccupied -> Nothing
->   Occupied f -> Just $ Left f
->   Contested b' -> Just $ Right b
+>   Occupied f -> Just f
+>   Contested b' -> viewTile b' ps
 
 When a tile is no longer contested, the forces in it join together into a single force occupying the previously contested tile.
 
