@@ -30,12 +30,31 @@ A force may be placed into any unoccupied tile. A force which is already on the 
 > validMove b p (Place f pos) = p == player f && viewTile b pos == Nothing
 > validMove b p (Move f pf pt) = p == player f && undefined
 
-All players move simultaneously. 
+All players move simultaneously.
 
 > play :: Board -> Array PlayerID (Maybe Move) -> Board
 > play b ms = makeMoves b [ fromJust mm | (p,mm) <- assocs ms, validMove b p (fromJust mm), mm /= Nothing ]
 >
-> makeMoves = undefined
+> makeMoves :: Board -> [Move] -> Board
+> makeMoves b = closeTurn . foldl makeMove (openTurn b)
+>
+> openTurn :: Board -> TurnInProgress
+> openTurn = undefined
+>
+> type TurnInProgress = Array Position' UnresolvedTile
+>
+> data UnresolvedTile = UnresolvedTile
+>   { originalTile :: Tile
+>   , forcesMovingIn :: [Force]
+>   , forcesMovingOut :: [Force]
+>   , forcesBeingPlaced :: [Force]
+>   }
+>
+> makeMove :: TurnInProgress -> Move -> TurnInProgress
+> makeMove = undefined
+>
+> closeTurn :: TurnInProgress -> Board
+> closeTurn = undefined
 
 Every move costs an amount of ether to play.
 
