@@ -59,7 +59,8 @@ All players move simultaneously.
 >   }
 >
 > makeMove :: TurnInProgress -> Move -> TurnInProgress
-> makeMove = undefined
+> makeMove b (Place f p) = undefined
+> makeMove b (Move f pf pt) = undefined
 >
 > closeTurn :: TurnInProgress -> Board
 > closeTurn = undefined
