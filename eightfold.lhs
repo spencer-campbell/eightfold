@@ -34,36 +34,6 @@ All players move simultaneously.
 
 > play :: Board -> Array PlayerID (Maybe Move) -> Board
 > play b ms = makeMoves b [ fromJust mm | (p,mm) <- assocs ms, validMove b p (fromJust mm), mm /= Nothing ]
->
-> makeMoves :: Board -> [Move] -> Board
-> makeMoves b = closeTurn . foldl makeMove (openTurn b)
->
-> openTurn :: Board -> TurnInProgress
-> openTurn = fmap openTile
->
-> type TurnInProgress = Array Position' UnresolvedTile
->
-> data UnresolvedTile = UnresolvedTile
->   { originalTile :: Tile
->   , forcesMovingIn :: [Force]
->   , forcesMovingOut :: [Force]
->   , forcesBeingPlaced :: [Force]
->   }
->
-> openTile :: Tile -> UnresolvedTile
-> openTile t = UnresolvedTile
->   { originalTile = t
->   , forcesMovingIn = []
->   , forcesMovingOut = []
->   , forcesBeingPlaced = []
->   }
->
-> makeMove :: TurnInProgress -> Move -> TurnInProgress
-> makeMove b (Place f p) = undefined
-> makeMove b (Move f pf pt) = undefined
->
-> closeTurn :: TurnInProgress -> Board
-> closeTurn = undefined
 
 Every move costs an amount of ether to play.
 
@@ -124,3 +94,35 @@ The tile remains contested as long as forces owned by two or more players occupy
 > getPlayers Unoccupied = []
 > getPlayers (Occupied f) = [player f]
 > getPlayers (Contested b) = playersIn b
+
+TODO: talk about turn resolution.
+
+> makeMoves :: Board -> [Move] -> Board
+> makeMoves b = closeTurn . foldl makeMove (openTurn b)
+>
+> openTurn :: Board -> TurnInProgress
+> openTurn = fmap openTile
+>
+> type TurnInProgress = Array Position' UnresolvedTile
+>
+> data UnresolvedTile = UnresolvedTile
+>   { originalTile :: Tile
+>   , forcesMovingIn :: [Force]
+>   , forcesMovingOut :: [Force]
+>   , forcesBeingPlaced :: [Force]
+>   }
+>
+> openTile :: Tile -> UnresolvedTile
+> openTile t = UnresolvedTile
+>   { originalTile = t
+>   , forcesMovingIn = []
+>   , forcesMovingOut = []
+>   , forcesBeingPlaced = []
+>   }
+>
+> makeMove :: TurnInProgress -> Move -> TurnInProgress
+> makeMove b (Place f p) = undefined
+> makeMove b (Move f pf pt) = undefined
+>
+> closeTurn :: TurnInProgress -> Board
+> closeTurn = undefined
