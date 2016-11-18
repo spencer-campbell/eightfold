@@ -27,8 +27,18 @@ A player can make one of two moves each turn: place a force or move a force.
 A force may be placed into any unoccupied tile. A force which is already on the board may be moved into any tile in its movement pattern.
 
 > validMove :: Board -> PlayerID -> Move -> Bool
-> validMove b p (Place f pos) = p == player f && viewTile b pos == Nothing
-> validMove b p (Move f pf pt) = p == player f && undefined
+> validMove b p (Place f pos)
+>   = p == player f
+>   && viewTile b pos == Nothing
+> validMove b p (Move f pf pt)
+>   = p == player f
+>   && viewTile b pf == (Just f)
+>   && canMoveFromTo f pf pt
+
+The movement pattern of a force is the set of tiles it can move into, which is determined by the level of the force.
+
+> canMoveFromTo :: Force -> Position -> Position -> Bool
+> canMoveFromTo = undefined
 
 All players move simultaneously.
 
