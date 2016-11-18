@@ -14,19 +14,14 @@ Play takes place on an 8x8 board of square tiles.
 > emptyBoard :: Board
 > emptyBoard = array (('a',1),('h',8)) [ ((x,y),Unoccupied) | x <- ['a'..'h'], y <- [1..8] ]
 
-All players move simultaneously. The moves a player can make are: (1) place a force, (2) move a force, and (3) split a force.
+All players move simultaneously. A player can make one of two moves each turn: place a force or move a force.
 
 > data Move
->   = PlaceForce
->   | MoveForce
->   | SplitForce
-
-Every move costs an amount of ether to play.
-
-> type EtherAmount = Float
->
-> moveCost :: Move -> EtherAmount
-> moveCost m = undefined
+>   = Place Force AtPosition
+>   | Move Force FromPosition ToPosition
+> type AtPosition = Position
+> type FromPosition = Position
+> type ToPosition = Position
 
 Players join the game by placing a force on the board.
 
@@ -76,3 +71,10 @@ When a tile is no longer contested, the forces in it join together into a single
 > getPlayers Unoccupied = []
 > getPlayers (Occupied f) = [player f]
 > getPlayers (Contested b) = playersIn b
+
+Every move costs an amount of ether to play.
+
+> type EtherAmount = Float
+>
+> moveCost :: Move -> EtherAmount
+> moveCost m = undefined
